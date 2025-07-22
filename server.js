@@ -115,6 +115,7 @@ app.get('/', (req, res) => {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Carlotta API</title>
+    <link id="icon" rel="icon" href="https://qu.ax/GbGJV.jpg" type="image/jpg">
     <style>
         :root {
             --primary: #2563eb;
