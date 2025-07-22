@@ -1,4 +1,4 @@
-![Logo](https://files.catbox.moe/fetqga.jpg)
+![Logo](https://qu.ax/GbGJV.jpg)
 # New APIS
 
 🚀 **Simple, Clean & Powerful API System dengan Express.js**
@@ -120,7 +120,7 @@ new-apis/
 ```json
 {
   "success": false,
-  "creator": "Xenz",
+  "creator": "Danz",
   "error": "Error message",
 }
 ```
@@ -152,20 +152,7 @@ MIT License - Feel free to use and modify!
 
 ---
 
-**Built with ❤️ by Kuroxel - Simple, Clean & Powerful**
-
-![Logo](https://files.catbox.moe/dk0erc.jpg)
-
-
 ## 📞 Contact & Social Media
 
 Jangan ragu untuk terhubung dengan saya melalui:
-
-- ⭐ Star this repo
-- 💬 WhatsApp Channel: [https://whatsapp.com/channel/0029VbBPPG52f3EFT7ldeT0m](https://whatsapp.com/channel/0029VbBPPG52f3EFT7ldeT0m)
-- 📱 Chat WhatsApp: [https://wa.me/6281297662535](https://wa.me/6281297662535)
-- 📸 Instagram: [kuroxel_studio](https://www.instagram.com/kuroxel_studio)
-- 🐦 X/Twitter: [KuroxelStudio](https://twitter.com/KuroxelStudio)
-- 🐙 GitHub: [Kuroxel](https://github.com/Kuroxel)
-
 
