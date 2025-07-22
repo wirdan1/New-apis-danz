@@ -89,20 +89,19 @@ app.get('/', (req, res) => {
     if (apiEndpoints.length === 0) {
         return `<div class="no-endpoints">
           <p>No endpoints found</p>
-          <p>Add some modules to the /scrape directory to get started!</p>
+          <p>Add some modules to the /scrape directory to get started</p>
         </div>`;
     }
     return apiEndpoints.map(endpoint => `
       <div class="endpoint-card">
-        <div class="method-badge ${endpoint.method}">${endpoint.method.toUpperCase()}</div>
-        <div class="endpoint-details">
-          <div class="route">${endpoint.route}</div>
-          <div class="meta">
-            <span class="function">${endpoint.function}()</span>
-            <span class="module">${endpoint.module}.js</span>
-          </div>
-          ${endpoint.method === 'get' ? `<a href="${endpoint.route}?param=value" class="test-btn">Test</a>` : 
-            `<button class="test-btn disabled" disabled>Test</button>`}
+        <div class="endpoint-header">
+          <span class="method ${endpoint.method}">${endpoint.method.toUpperCase()}</span>
+          <code class="route">${endpoint.route}</code>
+          ${endpoint.method === 'get' ? `<a href="${endpoint.route}?param=value" class="test-btn" target="_blank">Test</a>` : ''}
+        </div>
+        <div class="endpoint-info">
+          <span class="function-name">${endpoint.function}()</span>
+          <span class="module-name">${endpoint.module}.js</span>
         </div>
       </div>
     `).join('');
@@ -113,252 +112,315 @@ app.get('/', (req, res) => {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carlotta API</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #2563eb;
-            --primary-dark: #1e40af;
-            --text-primary: #ffffff;
-            --text-secondary: #e5e7eb;
-            --text-tertiary: #9ca3af;
-            --bg-primary: #111827;
-            --bg-secondary: #1f2937;
-            --bg-surface: #1f2937;
-            --border: #374151;
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-darker: #4338ca;
+            --primary-light: #818cf8;
+            --primary-lighter: #a5b4fc;
+            --background: #0f172a;
+            --surface: #1e293b;
+            --surface-light: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #e2e8f0;
+            --text-tertiary: #94a3b8;
+            --border: #334155;
             --success: #10b981;
             --error: #ef4444;
             --warning: #f59e0b;
-            --info: #3b82f6;
-            --radius: 12px;
-            --padding: 16px;
         }
-
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
         }
-
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-primary);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--background);
             color: var(--text-primary);
+            min-height: 100vh;
             line-height: 1.5;
-            padding: var(--padding);
-            max-width: 100%;
-            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
-
+        
         .container {
-            max-width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
         }
-
+        
         .header {
             text-align: center;
-            margin-bottom: 24px;
-            padding: 16px 0;
+            margin-bottom: 3rem;
+            padding: 2rem 0;
         }
-
-        .title {
-            font-size: 28px;
+        
+        .header h1 {
+            font-size: 3rem;
             font-weight: 700;
-            margin-bottom: 8px;
-            background: linear-gradient(90deg, #3b82f6, #6366f1);
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.025em;
         }
-
-        .subtitle {
-            font-size: 16px;
+        
+        .header p {
+            font-size: 1.125rem;
             color: var(--text-tertiary);
             font-weight: 400;
+            max-width: 600px;
+            margin: 0 auto;
         }
-
+        
         .stats {
-            background: var(--bg-surface);
-            border-radius: var(--radius);
-            padding: 20px;
-            margin-bottom: 24px;
+            background: var(--surface);
+            border-radius: 0.75rem;
+            padding: 2rem;
+            margin-bottom: 3rem;
             text-align: center;
             border: 1px solid var(--border);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
-
-        .stats-label {
-            font-size: 14px;
-            color: var(--text-tertiary);
-            margin-bottom: 8px;
+        
+        .stats h3 {
+            font-size: 1rem;
             font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .stats-value {
-            font-size: 36px;
-            font-weight: 700;
-        }
-
-        .section-title {
-            font-size: 20px;
-            font-weight: 600;
-            margin: 24px 0 16px;
-            color: var(--text-secondary);
-        }
-
-        .endpoint-card {
-            background: var(--bg-surface);
-            border-radius: var(--radius);
-            padding: 16px;
-            margin-bottom: 12px;
-            border: 1px solid var(--border);
-            display: flex;
-            gap: 12px;
-            align-items: flex-start;
-        }
-
-        .method-badge {
-            font-size: 12px;
-            font-weight: 700;
-            padding: 4px 8px;
-            border-radius: 4px;
-            text-transform: uppercase;
-            flex-shrink: 0;
-            margin-top: 2px;
-        }
-
-        .get { background: var(--success); color: #111827; }
-        .post { background: var(--primary); }
-        .put { background: var(--warning); color: #111827; }
-        .delete { background: var(--error); }
-        .patch { background: var(--info); }
-
-        .endpoint-details {
-            flex-grow: 1;
-            overflow: hidden;
-        }
-
-        .route {
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 14px;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-            word-break: break-all;
-        }
-
-        .meta {
-            display: flex;
-            gap: 8px;
-            font-size: 12px;
             color: var(--text-tertiary);
-            margin-bottom: 12px;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .stats p {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1;
+        }
+        
+        .endpoints-section h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .endpoint-card {
+            background: var(--surface);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.2s ease;
+            border: 1px solid var(--border);
+        }
+        
+        .endpoint-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary);
+        }
+        
+        .endpoint-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
             flex-wrap: wrap;
         }
-
-        .function {
-            font-family: 'Courier New', Courier, monospace;
-            color: var(--text-secondary);
+        
+        .method {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: white;
+            min-width: 64px;
+            text-align: center;
         }
-
+        
+        .get { background: var(--primary); }
+        .post { background: var(--success); }
+        .put { background: var(--warning); color: #1e293b; }
+        .delete { background: var(--error); }
+        .patch { background: #8b5cf6; }
+        
+        .route {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            color: var(--primary-lighter);
+            background: rgba(15, 23, 42, 0.5);
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            flex: 1;
+            min-width: 200px;
+            border: 1px solid var(--border);
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        
         .test-btn {
-            display: inline-block;
             background: var(--primary);
             color: white;
+            padding: 0.5rem 1.25rem;
             border: none;
-            border-radius: 6px;
-            padding: 8px 16px;
-            font-size: 14px;
-            font-weight: 500;
+            border-radius: 0.375rem;
             text-decoration: none;
-            cursor: pointer;
-            transition: all 0.2s;
-            width: 100%;
-            text-align: center;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 36px;
         }
-
-        .test-btn.disabled {
-            background: var(--bg-secondary);
-            color: var(--text-tertiary);
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-
-        .test-btn:not(.disabled):active {
-            transform: scale(0.98);
+        
+        .test-btn:hover {
             background: var(--primary-dark);
+            transform: translateY(-1px);
         }
-
+        
+        .endpoint-info {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.875rem;
+            color: var(--text-tertiary);
+            align-items: center;
+        }
+        
+        .function-name {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 500;
+            color: var(--primary-lighter);
+        }
+        
+        .module-name {
+            font-size: 0.8125rem;
+            background: var(--surface-light);
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+        }
+        
         .no-endpoints {
-            background: var(--bg-surface);
-            border-radius: var(--radius);
-            padding: 24px;
             text-align: center;
+            padding: 3rem;
+            background: var(--surface);
+            border-radius: 0.75rem;
             border: 1px dashed var(--border);
         }
-
+        
         .no-endpoints p:first-child {
-            font-size: 16px;
-            margin-bottom: 8px;
+            font-size: 1.125rem;
+            margin-bottom: 0.5rem;
             color: var(--text-secondary);
+            font-weight: 500;
         }
-
+        
         .no-endpoints p:last-child {
-            font-size: 14px;
             color: var(--text-tertiary);
         }
-
+        
         .api-info {
-            background: var(--bg-surface);
-            border-radius: var(--radius);
-            padding: 20px;
-            margin-top: 24px;
+            margin-top: 3rem;
+            padding: 2rem;
+            background: var(--surface);
+            border-radius: 0.75rem;
             text-align: center;
             border: 1px solid var(--border);
         }
-
+        
         .api-info h3 {
-            font-size: 18px;
-            margin-bottom: 8px;
             color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
         }
-
+        
         .api-info p {
-            font-size: 14px;
             color: var(--text-tertiary);
-            margin-bottom: 16px;
+            margin-bottom: 1rem;
         }
-
+        
         .api-info a {
-            display: inline-block;
-            background: var(--primary);
             color: white;
-            padding: 10px 20px;
-            border-radius: 6px;
             text-decoration: none;
             font-weight: 500;
-            transition: all 0.2s;
+            padding: 0.625rem 1.25rem;
+            background: var(--primary);
+            border-radius: 0.375rem;
+            transition: all 0.2s ease;
+            display: inline-block;
         }
-
-        .api-info a:active {
-            transform: scale(0.98);
+        
+        .api-info a:hover {
             background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .header p {
+                font-size: 1rem;
+            }
+            
+            .stats p {
+                font-size: 2rem;
+            }
+            
+            .endpoint-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+            
+            .route {
+                width: 100%;
+                min-width: auto;
+            }
+            
+            .test-btn {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1 class="title">Carlotta API</h1>
-            <p class="subtitle">Simple and Powerful API System</p>
+            <h1>Carlotta API</h1>
+            <p>A modern, scalable API system with automatic endpoint discovery</p>
         </div>
         
         <div class="stats">
-            <div class="stats-label">Available Endpoints</div>
-            <div class="stats-value">${apiEndpoints.length}</div>
+            <h3>Available Endpoints</h3>
+            <p>${apiEndpoints.length}</p>
         </div>
         
-        <h2 class="section-title">API Endpoints</h2>
-        <div class="endpoints-list">
+        <div class="endpoints-section">
+            <h2>API Endpoints</h2>
             ${generateEndpointsHtml()}
         </div>
         
@@ -377,7 +439,7 @@ app.get('/', (req, res) => {
 app.get('/api', (req, res) => {
   res.json({
     success: true,
-    message: 'Carlotta - Simple & Clean API System',
+    message: 'Carlotta - Modern API System',
     creator: 'Kuroxel',
     version: '1.0.0',
     features: [
