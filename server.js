@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/public', express.static('public'));
 
-console.log('Starting Carlotta API server...');
+console.log('🚀 Starting Carlotta API server...');
 
 function detectHttpMethod(functionName) {
   const name = functionName.toLowerCase();
@@ -27,12 +27,12 @@ function detectHttpMethod(functionName) {
   return 'get';
 }
 
-console.log('Checking scrape directory...');
+console.log('📁 Checking scrape directory...');
 const scrapeDir = path.resolve('./scrape');
 
 if (fs.existsSync(scrapeDir)) {
   const files = fs.readdirSync(scrapeDir).filter(file => file.endsWith('.js'));
-  console.log(`Found ${files.length} scrape files:`, files);
+  console.log(`📋 Found ${files.length} scrape files:`, files);
   
   for (const file of files) {
     try {
@@ -40,7 +40,7 @@ if (fs.existsSync(scrapeDir)) {
       const module = require(filePath);
       const fileName = path.basename(file, '.js');
       
-      console.log(`Loading ${fileName}:`, Object.keys(module));
+      console.log(`📄 Loading ${fileName}:`, Object.keys(module));
       
       for (const [funcName, func] of Object.entries(module)) {
         if (typeof func === 'function') {
@@ -54,7 +54,7 @@ if (fs.existsSync(scrapeDir)) {
             function: funcName
           });
           
-          console.log(`Registering ${method.toUpperCase()} ${route}`);
+          console.log(`🔗 Registering ${method.toUpperCase()} ${route}`);
           
           app[method](route, async (req, res) => {
             try {
@@ -76,11 +76,11 @@ if (fs.existsSync(scrapeDir)) {
         }
       }
     } catch (error) {
-      console.error(`Error loading ${file}:`, error.message);
+      console.error(`❌ Error loading ${file}:`, error.message);
     }
   }
 } else {
-  console.log('Scrape directory not found, creating...');
+  console.log('📁 Scrape directory not found, creating...');
   fs.mkdirSync(scrapeDir, { recursive: true });
 }
 
@@ -88,8 +88,8 @@ app.get('/', (req, res) => {
   const generateEndpointsHtml = () => {
     if (apiEndpoints.length === 0) {
         return `<div class="no-endpoints">
-          <p>No endpoints found</p>
-          <p>Add some modules to the /scrape directory to get started</p>
+          <p>🔍 No endpoints found</p>
+          <p>Add some modules to the /scrape directory to get started!</p>
         </div>`;
     }
     return apiEndpoints.map(endpoint => `
@@ -109,33 +109,12 @@ app.get('/', (req, res) => {
 
   const html = `
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carlotta API</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --primary-darker: #4338ca;
-            --primary-light: #818cf8;
-            --primary-lighter: #a5b4fc;
-            --background: #0f172a;
-            --surface: #1e293b;
-            --surface-light: #334155;
-            --text-primary: #f8fafc;
-            --text-secondary: #e2e8f0;
-            --text-tertiary: #94a3b8;
-            --border: #334155;
-            --success: #10b981;
-            --error: #ef4444;
-            --warning: #f59e0b;
-        }
-        
         * {
             margin: 0;
             padding: 0;
@@ -143,18 +122,32 @@ app.get('/', (req, res) => {
         }
         
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--background);
-            color: var(--text-primary);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
             min-height: 100vh;
-            line-height: 1.5;
-            -webkit-font-smoothing: antialiased;
+            position: relative;
+            overflow-x: hidden;
         }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://files.catbox.moe/f2dzke.jpg') center/cover no-repeat;
+            opacity: 0.4;
+            z-index: -1;
+        }        
         
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 2rem 1.5rem;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
         }
         
         .header {
@@ -164,213 +157,183 @@ app.get('/', (req, res) => {
         }
         
         .header h1 {
-            font-size: 3rem;
-            font-weight: 700;
-            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #e5e5e5 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 0.5rem;
-            letter-spacing: -0.025em;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
         }
         
         .header p {
-            font-size: 1.125rem;
-            color: var(--text-tertiary);
-            font-weight: 400;
-            max-width: 600px;
-            margin: 0 auto;
+            font-size: 1.2rem;
+            color: #a3a3a3;
+            opacity: 0.9;
+            font-weight: 300;
         }
         
         .stats {
-            background: var(--surface);
-            border-radius: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
             padding: 2rem;
             margin-bottom: 3rem;
             text-align: center;
-            border: 1px solid var(--border);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
         
         .stats h3 {
-            font-size: 1rem;
-            font-weight: 500;
-            color: var(--text-tertiary);
+            font-size: 1.5rem;
             margin-bottom: 0.5rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            color: #a3a3a3;
         }
         
         .stats p {
-            font-size: 3rem;
+            font-size: 2.5rem;
             font-weight: 700;
-            color: var(--text-primary);
-            line-height: 1;
+            color: #ffffff;
         }
         
         .endpoints-section h2 {
-            font-size: 1.5rem;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: #a3a3a3;
             font-weight: 600;
-            color: var(--text-secondary);
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid var(--border);
         }
         
         .endpoint-card {
-            background: var(--surface);
-            border-radius: 0.75rem;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
             padding: 1.5rem;
             margin-bottom: 1rem;
-            transition: all 0.2s ease;
-            border: 1px solid var(--border);
+            transition: all 0.3s ease;
         }
         
         .endpoint-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
         
         .endpoint-header {
             display: flex;
             align-items: center;
             gap: 1rem;
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
             flex-wrap: wrap;
         }
         
         .method {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.25rem 0.75rem;
-            border-radius: 0.375rem;
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
             font-weight: 600;
             font-size: 0.75rem;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: white;
-            min-width: 64px;
-            text-align: center;
+            letter-spacing: 0.5px;
+            color: #ffffff;
         }
         
-        .get { background: var(--primary); }
-        .post { background: var(--success); }
-        .put { background: var(--warning); color: #1e293b; }
-        .delete { background: var(--error); }
-        .patch { background: #8b5cf6; }
+        .get { background: #2563eb; }
+        .post { background: #1d4ed8; }
+        .put { background: #1e40af; }
+        .delete { background: #1e3a8a; }
+        .patch { background: #172554; }
         
         .route {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.875rem;
-            color: var(--primary-lighter);
-            background: rgba(15, 23, 42, 0.5);
-            padding: 0.5rem 1rem;
-            border-radius: 0.375rem;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.9rem;
+            color: #93c5fd;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
             flex: 1;
             min-width: 200px;
-            border: 1px solid var(--border);
-            overflow-x: auto;
-            white-space: nowrap;
         }
         
         .test-btn {
-            background: var(--primary);
-            color: white;
-            padding: 0.5rem 1.25rem;
+            background: #2563eb;
+            color: #ffffff;
+            padding: 0.5rem 1rem;
             border: none;
-            border-radius: 0.375rem;
+            border-radius: 6px;
             text-decoration: none;
-            font-size: 0.875rem;
+            font-size: 0.8rem;
             font-weight: 500;
             transition: all 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            height: 36px;
         }
         
         .test-btn:hover {
-            background: var(--primary-dark);
-            transform: translateY(-1px);
+            background: #1d4ed8;
+            transform: scale(1.05);
         }
         
         .endpoint-info {
             display: flex;
             gap: 1rem;
-            font-size: 0.875rem;
-            color: var(--text-tertiary);
-            align-items: center;
+            font-size: 0.85rem;
+            color: #60a5fa;
         }
         
         .function-name {
             font-family: 'JetBrains Mono', monospace;
             font-weight: 500;
-            color: var(--primary-lighter);
         }
         
         .module-name {
-            font-size: 0.8125rem;
-            background: var(--surface-light);
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
+            opacity: 0.7;
         }
         
         .no-endpoints {
             text-align: center;
             padding: 3rem;
-            background: var(--surface);
-            border-radius: 0.75rem;
-            border: 1px dashed var(--border);
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 2px dashed rgba(255, 255, 255, 0.2);
         }
         
         .no-endpoints p:first-child {
-            font-size: 1.125rem;
+            font-size: 1.2rem;
             margin-bottom: 0.5rem;
-            color: var(--text-secondary);
-            font-weight: 500;
+            color: #a3a3a3;
         }
         
         .no-endpoints p:last-child {
-            color: var(--text-tertiary);
+            color: #93c5fd;
+            opacity: 0.8;
         }
         
         .api-info {
             margin-top: 3rem;
             padding: 2rem;
-            background: var(--surface);
-            border-radius: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
             text-align: center;
-            border: 1px solid var(--border);
         }
         
         .api-info h3 {
-            color: var(--text-secondary);
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-        
-        .api-info p {
-            color: var(--text-tertiary);
+            color: #a3a3a3;
             margin-bottom: 1rem;
         }
         
         .api-info a {
-            color: white;
+            color: #60a5fa;
             text-decoration: none;
             font-weight: 500;
-            padding: 0.625rem 1.25rem;
-            background: var(--primary);
-            border-radius: 0.375rem;
+            padding: 0.5rem 1rem;
+            background: rgba(37, 99, 235, 0.1);
+            border-radius: 6px;
             transition: all 0.2s ease;
-            display: inline-block;
         }
         
         .api-info a:hover {
-            background: var(--primary-dark);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            background: rgba(37, 99, 235, 0.2);
+            transform: scale(1.05);
         }
         
         @media (max-width: 768px) {
@@ -379,29 +342,16 @@ app.get('/', (req, res) => {
             }
             
             .header h1 {
-                font-size: 2rem;
-            }
-            
-            .header p {
-                font-size: 1rem;
-            }
-            
-            .stats p {
-                font-size: 2rem;
+                font-size: 2.5rem;
             }
             
             .endpoint-header {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 0.75rem;
             }
             
             .route {
-                width: 100%;
                 min-width: auto;
-            }
-            
-            .test-btn {
                 width: 100%;
             }
         }
@@ -411,7 +361,7 @@ app.get('/', (req, res) => {
     <div class="container">
         <div class="header">
             <h1>Carlotta API</h1>
-            <p>A modern, scalable API system with automatic endpoint discovery</p>
+            <p>Simple, Clean & Powerful API System</p>
         </div>
         
         <div class="stats">
@@ -420,13 +370,14 @@ app.get('/', (req, res) => {
         </div>
         
         <div class="endpoints-section">
-            <h2>API Endpoints</h2>
+            <h2>🚀 API Endpoints</h2>
             ${generateEndpointsHtml()}
         </div>
         
         <div class="api-info">
-            <h3>API Documentation</h3>
+            <h3>📖 API Documentation</h3>
             <p>Get detailed API information in JSON format</p>
+            <br>
             <a href="/api" target="_blank">View API Info</a>
         </div>
     </div>
@@ -439,7 +390,7 @@ app.get('/', (req, res) => {
 app.get('/api', (req, res) => {
   res.json({
     success: true,
-    message: 'Carlotta - Modern API System',
+    message: 'Carlotta - Simple & Clean API System',
     creator: 'Kuroxel',
     version: '1.0.0',
     features: [
@@ -453,8 +404,8 @@ app.get('/api', (req, res) => {
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Carlotta API running on http://0.0.0.0:${PORT}`);
-  console.log(`Total endpoints loaded: ${apiEndpoints.length}`);
+  console.log(`🚀 Carlotta API running on http://0.0.0.0:${PORT}`);
+  console.log(`📊 Total endpoints loaded: ${apiEndpoints.length}`);
 });
 
 module.exports = app;
